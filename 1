@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Goodbye tension, hello pension</title>
+  <style>
+    :root{
+      --bg:#f5f6f7;
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --border:#e5e7eb;
+      --accent:#0f766e;
+      --accent-weak:#e6f3f2;
+      --shadow: 0 1px 2px rgba(0,0,0,.04);
+      --radius: 10px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", Arial;
+      background:var(--bg);
+      color:var(--text);
+    }
+    header{
+      position: sticky;
+      top:0;
+      z-index:10;
+      background: rgba(245,246,247,.9);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--border);
+    }
+    .wrap{ max-width: 880px; margin: 0 auto; padding: 16px; }
+    .brand{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding: 10px 0; }
+    .brand h1{ margin:0; font-weight:300; letter-spacing:.2px; font-size:20px; }
+    .grid{ display:grid; grid-template-columns: 1fr; gap:12px; padding: 14px 0 24px; }
+    @media (min-width: 860px){ .grid{ grid-template-columns: 1fr 1fr; } }
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      padding:14px;
+    }
+    .card h2{ margin:0 0 10px 0; font-size:14px; font-weight:600; letter-spacing:.2px; }
+    .sub{ margin:0 0 12px 0; font-size:12px; color:var(--muted); line-height:1.5; }
+    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    input[type="date"], input[type="text"], input[type="password"]{
+      width:100%;
+      padding:10px 10px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      background:#fff;
+      outline:none;
+      font-size:14px;
+    }
+    input:focus{
+      border-color: rgba(15,118,110,.45);
+      box-shadow: 0 0 0 3px rgba(15,118,110,.10);
+    }
+    .btn{
+      appearance:none;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:10px;
+      cursor:pointer;
+      font-size:13px;
+      line-height:1;
+      transition:.12s ease;
+      user-select:none;
+    }
+    .btn:hover{ background:#fafafa; }
+    .btn.primary{ border-color: rgba(15,118,110,.25); background: var(--accent); color:#fff; }
+    .btn.primary:hover{ filter: brightness(.98); }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px; border-radius:999px;
+      background: var(--accent-weak); color: var(--accent);
+      border: 1px solid rgba(15,118,110,.18);
+      font-size:12px; font-weight:600;
+    }
+    .bigNumber{ font-size: 34px; font-weight:700; color: var(--accent); line-height:1; }
+    .muted{ color:var(--muted); font-size:12px; }
+
+    .bar{ width:100%; height:10px; border-radius:999px; background:#eef2f7; border:1px solid var(--border); overflow:hidden; }
+    .bar > div{ height:100%; width:0%; background: var(--accent); transition: width .2s ease; }
+
+    .list{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+    .item{
+      display:grid;
+      grid-template-columns: 18px 1fr auto;
+      gap:10px;
+      align-items:center;
+      padding:10px 10px;
+      border:1px solid var(--border);
+      border-radius: 10px;
+      background:#fff;
+    }
+    .item.dragging{ opacity:.6; background:#f9fafb; }
+    .title{ font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .title.done{ color:#9ca3af; text-decoration: line-through; }
+    .actions{ display:flex; align-items:center; gap:6px; }
+    .iconBtn{
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:10px;
+      width:34px; height:34px;
+      display:inline-flex; align-items:center; justify-content:center;
+      cursor:pointer;
+    }
+    .iconBtn:hover{ background:#fafafa; }
+    .handle{ cursor: grab; color:#9ca3af; padding:0 6px; user-select:none; font-size:18px; line-height:1; }
+
+    /* Login overlay */
+    .overlay{
+      position:fixed; inset:0;
+      background: rgba(245,246,247,.92);
+      backdrop-filter: blur(10px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:999;
+    }
+    .overlay.show{ display:flex; }
+    .loginBox{
+      width: min(420px, 100%);
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 30px rgba(0,0,0,.08);
+      padding:16px;
+    }
+    .loginTop{
+      display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;
+    }
+    .loginTop h2{ margin:0; font-size:14px; }
+    .error{ color:#b91c1c; font-size:12px; margin-top:8px; display:none; }
+    .rightHeaderBtns{ display:flex; gap:8px; align-items:center; }
+  </style>
+</head>
+<body>
+
+  <!-- Login Overlay -->
+  <div class="overlay" id="loginOverlay" aria-hidden="true">
+    <div class="loginBox">
+      <div class="loginTop">
+        <h2>Login</h2>
+        <span class="pill">Private</span>
+      </div>
+      <p class="sub">Enter your password to continue.</p>
+
+      <div class="row">
+        <div style="flex:1; min-width:220px;">
+          <input id="loginPass" type="password" placeholder="Password (min 6 chars)" />
+        </div>
+        <button class="btn primary" id="loginBtn" type="button">Sign in</button>
+      </div>
+
+      <label class="muted" style="display:flex; gap:8px; align-items:center; margin-top:10px;">
+        <input id="rememberMe" type="checkbox" />
+        Remember me (this device)
+      </label>
+
+      <div class="error" id="loginError">Invalid password.</div>
+
+      <p class="muted" style="margin-top:12px; line-height:1.5;">
+        Tip: password is stored locally on your device if you enable “Remember me”.
+      </p>
+    </div>
+  </div>
+
+  <header>
+    <div class="wrap">
+      <div class="brand">
+        <h1>Goodbye tension, hello pension</h1>
+        <div class="rightHeaderBtns">
+          <span class="pill" id="progressPill">Progress 0%</span>
+          <button class="btn" id="logoutBtn" type="button" title="Log out">Log out</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+
+      <!-- Countdown -->
+      <section class="card">
+        <h2>Logout Countdown</h2>
+        <p class="sub">Set your planned logout date to see how many days are left. Saved on this device.</p>
+
+        <div class="row">
+          <div style="flex:1; min-width: 220px;">
+            <input id="resignDate" type="date" />
+          </div>
+          <button class="btn" id="clearDateBtn" type="button">Clear</button>
+        </div>
+
+        <div style="margin-top:14px; display:flex; gap:12px; align-items:baseline;">
+          <div class="bigNumber" id="daysLeft">—</div>
+          <div class="muted" id="daysLabel">days</div>
+        </div>
+
+        <p class="muted" id="dateHint">No date set.</p>
+      </section>
+
+      <!-- Checklist -->
+      <section class="card">
+        <h2>Logout Prep Checklist (Drag to reorder)</h2>
+        <p class="sub">Add / check / edit / delete items. Drag the handle to adjust priority.</p>
+
+        <div class="row">
+          <div style="flex:1; min-width: 220px;">
+            <input id="newItemInput" type="text" placeholder="Add a prep item, e.g. Update resume & portfolio" />
+          </div>
+          <button class="btn primary" id="addBtn" type="button">Add</button>
+        </div>
+
+        <div style="margin-top:12px;">
+          <div class="bar"><div id="progressBar"></div></div>
+          <div class="muted" style="margin-top:8px;" id="progressText">Completed 0 / 0</div>
+        </div>
+
+        <div class="list" id="list"></div>
+
+        <p class="muted" style="margin-top:10px;">Tip: Order is auto-saved.</p>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    // ===== Storage Keys =====
+    const KEY_DATE = "gt_hp_logoutDate_v1";
+    const KEY_LIST = "gt_hp_checklist_v1";
+    const KEY_UNLOCK = "gt_hp_unlocked_v1"; // remember me
+    const KEY_SESSION = "gt_hp_session_unlocked_v1"; // session only
+    const KEY_PASS = "gt_hp_pass_v1"; // local password (demo)
+
+    // ===== Elements =====
+    const $ = (id) => document.getElementById(id);
+
+    // ===== Helpers =====
+    function safeJsonParse(str, fallback){
+      try { return JSON.parse(str); } catch { return fallback; }
+    }
+    function calcDaysLeft(isoDate){
+      if(!isoDate) return null;
+      const target = new Date(isoDate + "T00:00:00");
+      const now = new Date();
+      const diff = target.getTime() - now.getTime();
+      return Math.max(0, Math.ceil(diff / (1000*60*60*24)));
+    }
+    function cryptoRandomId(){
+      try{
+        return crypto.getRandomValues(new Uint32Array(1))[0].toString(16) + Math.random().toString(16).slice(2,6);
+      }catch{
+        return Math.random().toString(36).slice(2,10);
+      }
+    }
+
+    // ===== Login Gate =====
+    function getStoredPass(){
+      // Demo logic: if no password set yet, set a default one.
+      // You can change the default here:
+      const DEFAULT_PASS = "123456";
+      const existing = localStorage.getItem(KEY_PASS);
+      if(existing && existing.length >= 6) return existing;
+      localStorage.setItem(KEY_PASS, DEFAULT_PASS);
+      return DEFAULT_PASS;
+    }
+
+    function isUnlocked(){
+      return sessionStorage.getItem(KEY_SESSION) === "true" || localStorage.getItem(KEY_UNLOCK) === "true";
+    }
+
+    function showLogin(show){
+      const el = $("loginOverlay");
+      el.classList.toggle("show", !!show);
+      el.setAttribute("aria-hidden", show ? "false" : "true");
+      if(show){
+        $("loginPass").value = "";
+        $("loginError").style.display = "none";
+        setTimeout(()=> $("loginPass").focus(), 50);
+      }
+    }
+
+    function unlock(remember){
+      sessionStorage.setItem(KEY_SESSION, "true");
+      if(remember) localStorage.setItem(KEY_UNLOCK, "true");
+      showLogin(false);
+    }
+
+    function lock(){
+      sessionStorage.removeItem(KEY_SESSION);
+      localStorage.removeItem(KEY_UNLOCK);
+      showLogin(true);
+    }
+
+    $("loginBtn").addEventListener("click", ()=>{
+      const pass = $("loginPass").value || "";
+      const remember = $("rememberMe").checked;
+      if(pass.length < 6 || pass !== getStoredPass()){
+        $("loginError").style.display = "block";
+        return;
+      }
+      unlock(remember);
+    });
+
+    $("loginPass").addEventListener("keydown", (e)=>{
+      if(e.key === "Enter") $("loginBtn").click();
+    });
+
+    $("logoutBtn").addEventListener("click", ()=>{
+      lock();
+    });
+
+    // ===== Countdown =====
+    function renderCountdown(iso){
+      const days = calcDaysLeft(iso);
+      if(days === null){
+        $("daysLeft").textContent = "—";
+        $("dateHint").textContent = "No date set.";
+        return;
+      }
+      $("daysLeft").textContent = String(days);
+      $("dateHint").textContent = (days === 0)
+        ? "Today is your planned logout date."
+        : `Logout in ${days} day(s). (Target: ${iso})`;
+    }
+
+    function loadDate(){
+      const saved = localStorage.getItem(KEY_DATE) || "";
+      $("resignDate").value = saved;
+      renderCountdown(saved);
+    }
+
+    $("resignDate").addEventListener("change", (e)=>{
+      const iso = e.target.value;
+      localStorage.setItem(KEY_DATE, iso);
+      renderCountdown(iso);
+    });
+
+    $("clearDateBtn").addEventListener("click", ()=>{
+      localStorage.removeItem(KEY_DATE);
+      $("resignDate").value = "";
+      renderCountdown("");
+    });
+
+    // ===== Checklist =====
+    let items = [];
+
+    function defaultItems(){
+      return [
+        { id: cryptoRandomId(), title: "Update resume & portfolio", done: false, createdAt: Date.now() },
+        { id: cryptoRandomId(), title: "Define next role goals", done: false, createdAt: Date.now() },
+        { id: cryptoRandomId(), title: "Prepare emergency savings", done: false, createdAt: Date.now() },
+      ];
+    }
+
+    function saveList(){
+      localStorage.setItem(KEY_LIST, JSON.stringify(items));
+    }
+
+    function renderProgress(){
+      const total = items.length;
+      const done = items.filter(x=>x.done).length;
+      const pct = total === 0 ? 0 : Math.round((done/total)*100);
+
+      $("progressText").textContent = `Completed ${done} / ${total}`;
+      $("progressBar").style.width = pct + "%";
+      $("progressPill").textContent = `Progress ${pct}%`;
+    }
+
+    function renderList(){
+      const list = $("list");
+      list.innerHTML = "";
+
+      if(items.length === 0){
+        const empty = document.createElement("div");
+        empty.className = "muted";
+        empty.textContent = "No items yet. Add one above.";
+        list.appendChild(empty);
+        return;
+      }
+
+      items.forEach((item)=>{
+        const row = document.createElement("div");
+        row.className = "item";
+        row.draggable = true;
+        row.dataset.id = item.id;
+
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = !!item.done;
+        cb.addEventListener("change", ()=>{
+          item.done = cb.checked;
+          saveList();
+          renderList();
+          renderProgress();
+        });
+
+        const title = document.createElement("div");
+        title.className = "title" + (item.done ? " done" : "");
+        title.textContent = item.title;
+
+        const actions = document.createElement("div");
+        actions.className = "actions";
+
+        const edit = document.createElement("button");
+        edit.className = "iconBtn";
+        edit.type = "button";
+        edit.title = "Edit";
+        edit.innerHTML = "✎";
+        edit.addEventListener("click", ()=>{
+          const next = prompt("Edit item", item.title);
+          if(next === null) return;
+          const trimmed = next.trim();
+          if(!trimmed) return;
+          item.title = trimmed;
+          saveList();
+          renderList();
+        });
+
+        const del = document.createElement("button");
+        del.className = "iconBtn";
+        del.type = "button";
+        del.title = "Delete";
+        del.innerHTML = "🗑";
+        del.addEventListener("click", ()=>{
+          const ok = confirm("Delete this item?");
+          if(!ok) return;
+          items = items.filter(x=>x.id !== item.id);
+          saveList();
+          renderList();
+          renderProgress();
+        });
+
+        const handle = document.createElement("span");
+        handle.className = "handle";
+        handle.title = "Drag to reorder";
+        handle.textContent = "≡";
+
+        actions.appendChild(edit);
+        actions.appendChild(del);
+        actions.appendChild(handle);
+
+        row.appendChild(cb);
+        row.appendChild(title);
+        row.appendChild(actions);
+
+        // Drag & Drop reorder
+        row.addEventListener("dragstart", (e)=>{
+          row.classList.add("dragging");
+          e.dataTransfer.effectAllowed = "move";
+          e.dataTransfer.setData("text/plain", item.id);
+        });
+        row.addEventListener("dragend", ()=>{
+          row.classList.remove("dragging");
+        });
+        row.addEventListener("dragover", (e)=>{
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "move";
+        });
+        row.addEventListener("drop", (e)=>{
+          e.preventDefault();
+          const activeId = e.dataTransfer.getData("text/plain");
+          const overId = row.dataset.id;
+          if(!activeId || !overId || activeId === overId) return;
+
+          const from = items.findIndex(x=>x.id === activeId);
+          const to = items.findIndex(x=>x.id === overId);
+          if(from < 0 || to < 0) return;
+
+          const moved = items.splice(from, 1)[0];
+          items.splice(to, 0, moved);
+          saveList();
+          renderList();
+        });
+
+        list.appendChild(row);
+      });
+    }
+
+    function loadList(){
+      const raw = localStorage.getItem(KEY_LIST);
+      if(raw){
+        items = safeJsonParse(raw, defaultItems());
+      }else{
+        items = defaultItems();
+        saveList();
+      }
+      renderList();
+      renderProgress();
+    }
+
+    $("addBtn").addEventListener("click", ()=>{
+      const input = $("newItemInput");
+      const title = (input.value || "").trim();
+      if(!title) return;
+
+      items.unshift({ id: cryptoRandomId(), title, done:false, createdAt: Date.now() });
+      input.value = "";
+      saveList();
+      renderList();
+      renderProgress();
+    });
+
+    $("newItemInput").addEventListener("keydown", (e)=>{
+      if(e.key === "Enter") $("addBtn").click();
+    });
+
+    // ===== Init =====
+    (function init(){
+      // show login if locked
+      if(!isUnlocked()) showLogin(true);
+
+      loadDate();
+      loadList();
+    })();
+  </script>
+</body>
+</html>
