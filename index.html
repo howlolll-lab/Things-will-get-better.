@@ -1,277 +1,125 @@
-
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="zh-Hant">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Goodbye tension, hello pension</title>
-
-<style>
-body{
-font-family:Arial, sans-serif;
-background:#f5f6f7;
-margin:0;
-padding:20px;
-}
-
-.container{
-max-width:900px;
-margin:auto;
-}
-
-.card{
-background:white;
-padding:20px;
-border-radius:10px;
-margin-bottom:15px;
-border:1px solid #e5e7eb;
-}
-
-h1{
-font-weight:300;
-}
-
-button{
-padding:8px 14px;
-border-radius:8px;
-border:1px solid #ccc;
-cursor:pointer;
-}
-
-.primary{
-background:#0f766e;
-color:white;
-border:none;
-}
-
-input{
-padding:8px;
-border-radius:8px;
-border:1px solid #ccc;
-width:100%;
-margin-top:6px;
-}
-
-.item{
-display:flex;
-justify-content:space-between;
-padding:8px;
-border-bottom:1px solid #eee;
-}
-
-.done{
-text-decoration:line-through;
-color:gray;
-}
-
-.topbar{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:15px;
-}
-
-.overlay{
-position:fixed;
-top:0;
-left:0;
-right:0;
-bottom:0;
-background:rgba(0,0,0,0.4);
-display:flex;
-justify-content:center;
-align-items:center;
-}
-
-.login{
-background:white;
-padding:25px;
-border-radius:10px;
-width:300px;
-}
-</style>
-
-</head>
-<body>
-
-<div class="overlay" id="loginOverlay">
-<div class="login">
-
-<h3>Login</h3>
-
-<input type="password" id="loginPass" placeholder="password">
-
-<br><br>
-
-<button class="primary" onclick="login()">Sign in</button>
-
-</div>
-</div>
-
-
-<div class="container">
-
-<div class="topbar">
-<h1>Goodbye tension, hello pension</h1>
-<button onclick="logout()">Logout</button>
-</div>
-
-
-<div class="card">
-
-<h3>Logout Countdown</h3>
-
-<input type="date" id="logoutDate">
-
-<h2 id="daysLeft">-</h2>
-
-</div>
-
-
-<div class="card">
-
-<h3>Checklist</h3>
-
-<input id="taskInput" placeholder="New task">
-
-<br><br>
-
-<button class="primary" onclick="addTask()">Add</button>
-
-<div id="taskList"></div>
-
-</div>
-
-
-<div class="card">
-
-<h3>Settings</h3>
-
-<label>Current Password</label>
-<input id="currentPass" type="password">
-
-<label>New Password</label>
-<input id="newPass" type="password">
-
-<button onclick="changePassword()">Change Password</button>
-
-</div>
-
-
-</div>
-
-<script>
-
-const PASS_KEY="app_password"
-const TASK_KEY="app_tasks"
-
-if(!localStorage.getItem(PASS_KEY)){
-localStorage.setItem(PASS_KEY,"123456")
-}
-
-function login(){
-
-let p=document.getElementById("loginPass").value
-
-if(p===localStorage.getItem(PASS_KEY)){
-document.getElementById("loginOverlay").style.display="none"
-}else{
-alert("Wrong password")
-}
-
-}
-
-function logout(){
-
-document.getElementById("loginOverlay").style.display="flex"
-
-}
-
-function changePassword(){
-
-let current=document.getElementById("currentPass").value
-let next=document.getElementById("newPass").value
-
-if(current!==localStorage.getItem(PASS_KEY)){
-alert("Wrong current password")
-return
-}
-
-if(next.length<6){
-alert("Password must be 6 characters")
-return
-}
-
-localStorage.setItem(PASS_KEY,next)
-
-alert("Password changed")
-
-}
-
-function addTask(){
-
-let text=document.getElementById("taskInput").value
-
-if(!text)return
-
-let tasks=JSON.parse(localStorage.getItem(TASK_KEY)||"[]")
-
-tasks.push({text,done:false})
-
-localStorage.setItem(TASK_KEY,JSON.stringify(tasks))
-
-document.getElementById("taskInput").value=""
-
-renderTasks()
-
-}
-
-function toggleTask(i){
-
-let tasks=JSON.parse(localStorage.getItem(TASK_KEY)||"[]")
-
-tasks[i].done=!tasks[i].done
-
-localStorage.setItem(TASK_KEY,JSON.stringify(tasks))
-
-renderTasks()
-
-}
-
-function renderTasks(){
-
-let tasks=JSON.parse(localStorage.getItem(TASK_KEY)||"[]")
-
-let html=""
-
-tasks.forEach((t,i)=>{
-
-html+=`<div class="item ${t.done?"done":""}">
-<span onclick="toggleTask(${i})">${t.text}</span>
-</div>`
-
-})
-
-document.getElementById("taskList").innerHTML=html
-
-}
-
-renderTasks()
-
-document.getElementById("logoutDate").addEventListener("change",function(){
-
-let target=new Date(this.value)
-let today=new Date()
-
-let diff=target-today
-
-let days=Math.ceil(diff/(1000*60*60*24))
-
-document.getElementById("daysLeft").innerText=days+" days"
-
-})
-
-</script>
-
-</body>
-</html>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Goodbye tension, hello pension</title>
+  <meta name="theme-color" content="#0b0b0c" />
+  <meta name="description" content="Goodbye tension, hello pension — Sign out points tracker" />
+  <style>
+    :root{
+      --bg:#0b0b0c;
+      --panel:#121215;
+      --panel2:#16161a;
+      --text:#e9e9ee;
+      --muted:#a9a9b3;
+      --faint:#6d6d78;
+      --line:#232329;
+      --accent:#e9e9ee; /* neutral */
+      --good:#9be28a;
+      --warn:#ffd27a;
+      --bad:#ff7b7b;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+      --radius2: 12px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    [data-theme="light"]{
+      --bg:#f4f4f6;
+      --panel:#ffffff;
+      --panel2:#fbfbfd;
+      --text:#111114;
+      --muted:#4a4a57;
+      --faint:#7c7c8a;
+      --line:#e7e7ee;
+      --accent:#111114;
+      --shadow: 0 10px 30px rgba(10,10,20,.08);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background: radial-gradient(1200px 700px at 20% 0%, rgba(255,255,255,.06), transparent 60%),
+                  radial-gradient(1000px 700px at 80% 10%, rgba(255,255,255,.04), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    a{color:inherit}
+    button, input, textarea, select{font:inherit}
+    .app{min-height:100%; display:flex}
+    .sidebar{
+      width:300px;
+      padding:18px;
+      border-right:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent 45%), var(--panel);
+      position:sticky; top:0; height:100vh;
+    }
+    .brand{
+      display:flex; gap:10px; align-items:center; padding:10px 10px 14px;
+    }
+    .logo{
+      width:42px; height:42px; border-radius:14px;
+      background: linear-gradient(135deg, rgba(255,255,255,.16), rgba(255,255,255,.04));
+      border:1px solid var(--line);
+      box-shadow: var(--shadow);
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--mono);
+      letter-spacing:.5px;
+      user-select:none;
+    }
+    .brand h1{
+      margin:0;
+      font-size:14px;
+      line-height:1.2;
+      font-weight:650;
+    }
+    .brand p{margin:2px 0 0; font-size:12px; color:var(--muted)}
+    .nav{
+      display:flex; flex-direction:column; gap:6px;
+      margin-top:10px;
+    }
+    .nav a{
+      text-decoration:none;
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid transparent;
+      color:var(--muted);
+      background: transparent;
+    }
+    .nav a.active{
+      background: var(--panel2);
+      border-color: var(--line);
+      color: var(--text);
+    }
+    .nav a:hover{background:var(--panel2); border-color:var(--line); color:var(--text)}
+    .pill{
+      font-size:11px; padding:3px 8px; border-radius:999px;
+      border:1px solid var(--line); color:var(--muted);
+    }
+    .sidebar .footer{
+      margin-top:auto;
+      padding:12px 10px 8px;
+      color:var(--faint);
+      font-size:12px;
+    }
+    .sidebar .footer .row{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+    .iconbtn{
+      border:1px solid var(--line);
+      background: var(--panel2);
+      color: var(--text);
+      border-radius:12px;
+      padding:8px 10px;
+      cursor:pointer;
+    }
+    .iconbtn:hover{filter:brightness(1.05)}
+    .content{flex:1; padding:22px; max-width:1200px}
+    .topbar{
+      display:flex; justify-content:space-between; align-items:center;
+      gap:12px;
+      margin-bottom:16px;
+    }
+    .topbar h2{margin:0; font-size:18px
