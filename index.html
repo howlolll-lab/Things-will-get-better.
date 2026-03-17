@@ -133,7 +133,7 @@
     }
     .pcMeta{ text-align:right; font-size:11px; color:var(--muted); line-height:1.4; font-family:var(--mono); }
 
-    .circleGrid{ display:grid; grid-template-columns: repeat(10, 1fr); gap:10px; margin-top:10px; }
+    .circleGrid{ display:grid; grid-template-columns: repeat(5, 1fr); gap:10px; margin-top:10px; }
     .circleWrap{ position:relative; }
     .circle{
       aspect-ratio:1/1; border-radius:999px; border:1px solid rgba(0,0,0,.12);
@@ -195,12 +195,12 @@
     .modal .foot{padding:12px 14px; border-top:1px solid var(--line); display:flex; gap:10px; justify-content:flex-end;}
 
     @media (max-width: 980px){
-      .circleGrid{ grid-template-columns: repeat(5, 1fr); }
+      .circleGrid{ display:grid; grid-template-columns: repeat(5, 1fr); gap:10px; margin-top:10px; }
       .twoCol{ grid-template-columns: 1fr; }
       .shell{ display:block; }}
 
     @media (max-width: 980px){
-      .circleGrid{ grid-template-columns: repeat(5, 1fr); }
+      .circleGrid{ display:grid; grid-template-columns: repeat(5, 1fr); gap:10px; margin-top:10px; }
       .twoCol{ grid-template-columns: 1fr; }
       .shell{ display:block; }
     }
@@ -237,7 +237,7 @@
       .pcShell{ padding:14px; }
       .pcHead{ flex-direction:column; align-items:flex-start; gap:8px; }
       .pcMeta{ text-align:left; }
-      .circleGrid{ grid-template-columns: repeat(4, 1fr); gap:8px; }
+      .circleGrid{ display:grid; grid-template-columns: repeat(5, 1fr); gap:10px; margin-top:10px; }
       .circle{ font-size:10px; }
       .pcFoot{ flex-direction:column; align-items:flex-start; gap:10px; }
       .pager{ width:100%; justify-content:space-between; }
@@ -252,7 +252,7 @@
       .panel{ padding:12px; }
       .card{ padding:22px 18px; }
       .title h1{ font-size:20px; }
-      .circleGrid{ grid-template-columns: repeat(3, 1fr); }
+      .circleGrid{ display:grid; grid-template-columns: repeat(5, 1fr); gap:10px; margin-top:10px; }
       .metric .v{ font-size:20px; }
       .hint{ font-size:11px; }
     }
