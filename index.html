@@ -198,6 +198,65 @@
       .circleGrid{ grid-template-columns: repeat(5, 1fr); }
       .twoCol{ grid-template-columns: 1fr; }
       .shell{ display:block; }}
+
+    @media (max-width: 980px){
+      .circleGrid{ grid-template-columns: repeat(5, 1fr); }
+      .twoCol{ grid-template-columns: 1fr; }
+      .shell{ display:block; }
+    }
+
+    @media (max-width: 768px){
+      body{ font-size:14px; }
+      .container{ padding:16px 12px 32px; }
+      .topbar{ flex-direction:column; align-items:stretch; gap:10px; }
+      .topLeft{ width:100%; align-items:flex-start; }
+      .brand{
+        white-space:normal;
+        overflow:visible;
+        text-overflow:unset;
+        line-height:1.35;
+      }
+      .topbar > div:last-child{
+        width:100%;
+        display:grid !important;
+        grid-template-columns: 1fr 1fr;
+        gap:8px;
+      }
+      .topbar > div:last-child .btn{
+        width:100% !important;
+        padding:11px 12px;
+      }
+      .panel{ padding:14px; }
+      .dashGrid,
+      .dashGrid2{
+        grid-template-columns: 1fr !important;
+        gap:10px;
+      }
+      .metric{ padding:14px; }
+      .metric .v{ font-size:22px; }
+      .pcShell{ padding:14px; }
+      .pcHead{ flex-direction:column; align-items:flex-start; gap:8px; }
+      .pcMeta{ text-align:left; }
+      .circleGrid{ grid-template-columns: repeat(4, 1fr); gap:8px; }
+      .circle{ font-size:10px; }
+      .pcFoot{ flex-direction:column; align-items:flex-start; gap:10px; }
+      .pager{ width:100%; justify-content:space-between; }
+      input, textarea, .btn{ font-size:16px; }
+      .modal{ width:100%; }
+      .modal .body{ max-height:70vh; overflow:auto; }
+      #history .log{ padding:10px; }
+    }
+
+    @media (max-width: 480px){
+      .container{ padding:12px 10px 24px; }
+      .panel{ padding:12px; }
+      .card{ padding:22px 18px; }
+      .title h1{ font-size:20px; }
+      .circleGrid{ grid-template-columns: repeat(3, 1fr); }
+      .metric .v{ font-size:20px; }
+      .hint{ font-size:11px; }
+    }
+
 </style>
 </head>
 <body>
