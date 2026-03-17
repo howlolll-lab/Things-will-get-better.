@@ -627,11 +627,13 @@
               ${row("Other", buckets.other)}
             </div>
             <div class="log" style="margin:0;">
-              <div class="t">Latest snapshot</div>
+              <div class="t">Latest snapshot · summary + advice</div>
               ${latest ? `
                 <div style="white-space:pre-wrap; line-height:1.5;">${escapeHTML(snap.summary)}
 
-Tags: ${escapeHTML(snap.tags.join(", "))}</div>
+Tags: ${escapeHTML(snap.tags.join(", "))}
+
+${escapeHTML(snap.advice)}</div>
               ` : `<div class="hint" style="text-align:left;margin:0;">No logs yet.</div>`}
             </div>
           </div>
